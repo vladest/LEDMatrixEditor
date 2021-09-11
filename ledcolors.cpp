@@ -14,63 +14,44 @@ QColor colorInterpolate(const QColor& start, const QColor& end, int colors, int 
     return QColor::fromRgb(r,g,b);
 }
 
-// assigned 256 colors for the LED matrix
-static const QList<QPair<QColor, QColor>> m_rgbLEDColors = {
-    {{185,   0,   0}, {178,   0,   0}},
-    {{178,   0,   1}, {178,  55,  15}},
-    {{180,  64,  18}, {175, 120,  45}},
-    {{175, 125,  50}, {135, 170,  65}},
-    {{150, 185,  80}, {105, 205, 115}},
-    {{105, 205, 115}, { 40, 205, 155}},
-    {{  0, 205, 105}, {  0, 205, 160}},
-    {{  0, 205, 165}, {  0, 205, 190}},
-
-    {{  0, 205,  75}, {  0, 205,  95}},
-    {{  0, 205, 115}, {  0, 205, 135}},
-    {{  0, 205, 140}, {  0, 205, 150}},
-    {{  0, 205, 155}, {  0, 205, 175}},
-    {{  0, 205, 195}, {  0, 200, 205}},
-    {{  0, 200, 190}, {  0, 200, 205}},
-    {{  0, 200, 205}, {  0, 195, 205}},
-    {{  0, 195, 205}, {  0, 197, 206}},
-
-    {{  0, 195, 205}, {  0, 185, 205}},
-    {{  0, 190, 205}, {  0, 165, 205}},
-    {{  0, 167, 205}, {  0, 115, 205}},
-    {{  0, 117, 205}, {  0,  85, 205}},
-    {{  0,  70, 205}, {  0,  65, 205}},
-    {{  0,  45, 205}, {  0,  70, 205}},
-    {{  0,  65, 205}, {  0,  65, 205}},
-    {{  0,  65, 205}, {  0,  55, 205}},
-
-    // only 7 lines here
-    {{  0,  60, 205}, { 50,  60, 205}},
-    {{ 60,  85, 205}, {120,  75, 205}},
-    {{135,  85, 205}, {155,  65, 205}},
-    {{160,  35, 205}, {155,  15, 205}},
-    {{165,  15, 210}, {180,  15, 205}},
-    {{195,  15, 205}, {180,  10, 160}},
-    {{187,  10, 150}, { 185,  0,   5}},
+QList<QColor> LEDColors::m_matrixLedcolors = {
+    "#ff0000", "#ff0600", "#ff0c00", "#ff1200", "#ff1800", "#ff1e00", "#ff2400", "#ff2a00",
+    "#ff3000", "#ff3600", "#ff3c00", "#ff4200", "#ff4800", "#ff4e00", "#ff5400", "#ff5a00",
+    "#ff6000", "#ff6600", "#ff6c00", "#ff7200", "#ff7800", "#ff7e00", "#ff8400", "#ff8a00",
+    "#ff9000", "#ff9600", "#ff9c00", "#ffa200", "#ffa800", "#ffae00", "#ffb400", "#ffba00",
+    "#ffc000", "#ffc600", "#ffcc00", "#ffd200", "#ffd800", "#ffde00", "#ffe400", "#ffea00",
+    "#fff000", "#fff600", "#ffff00", "#f9ff00", "#f3ff00", "#edff00", "#e7ff00", "#e1ff00",
+    "#dbff00", "#d5ff00", "#cfff00", "#c9ff00", "#c3ff00", "#bdff00", "#b7ff00", "#b1ff00",
+    "#abff00", "#a5ff00", "#9fff00", "#99ff00", "#93ff00", "#8dff00", "#87ff00", "#81ff00",
+    "#7bff00", "#75ff00", "#6fff00", "#69ff00", "#63ff00", "#5dff00", "#57ff00", "#51ff00",
+    "#4bff00", "#45ff00", "#3fff00", "#39ff00", "#33ff00", "#2dff00", "#27ff00", "#21ff00",
+    "#1bff00", "#15ff00", "#0fff00", "#09ff00", "#03ff00", "#00ff00", "#00ff06", "#00ff0c",
+    "#00ff12", "#00ff18", "#00ff1e", "#00ff24", "#00ff2a", "#00ff30", "#00ff36", "#00ff3c",
+    "#00ff42", "#00ff48", "#00ff4e", "#00ff54", "#00ff5a", "#00ff60", "#00ff66", "#00ff6c",
+    "#00ff72", "#00ff78", "#00ff7e", "#00ff84", "#00ff8a", "#00ff90", "#00ff96", "#00ff9c",
+    "#00ffa2", "#00ffa8", "#00ffae", "#00ffb4", "#00ffba", "#00ffc0", "#00ffc6", "#00ffcc",
+    "#00ffd2", "#00ffd8", "#00ffde", "#00ffe4", "#00ffea", "#00fff0", "#00fff6", "#00fffc",
+    "#00ffff", "#00f9ff", "#00f3ff", "#00edff", "#00e7ff", "#00e1ff", "#00dbff", "#00d5ff",
+    "#00cfff", "#00c9ff", "#00c3ff", "#00bdff", "#00b7ff", "#00b1ff", "#00abff", "#00a5ff",
+    "#009fff", "#0099ff", "#0093ff", "#008dff", "#0087ff", "#0081ff", "#007bff", "#0075ff",
+    "#006fff", "#0069ff", "#0063ff", "#005dff", "#0057ff", "#0051ff", "#004bff", "#0045ff",
+    "#003fff", "#0039ff", "#0033ff", "#002dff", "#0027ff", "#0021ff", "#001bff", "#0015ff",
+    "#000fff", "#0009ff", "#0000ff", "#0600ff", "#0c00ff", "#1200ff", "#1800ff", "#1e00ff",
+    "#2400ff", "#2a00ff", "#3000ff", "#3600ff", "#3c00ff", "#4200ff", "#4800ff", "#4e00ff",
+    "#5400ff", "#5a00ff", "#6000ff", "#6600ff", "#6c00ff", "#7200ff", "#7800ff", "#7e00ff",
+    "#8400ff", "#8a00ff", "#9000ff", "#9600ff", "#9c00ff", "#a200ff", "#a800ff", "#ae00ff",
+    "#b400ff", "#ba00ff", "#c000ff", "#c600ff", "#cc00ff", "#d200ff", "#d800ff", "#de00ff",
+    "#e400ff", "#ea00ff", "#f000ff", "#f600ff", "#ff00ff", "#ff00f9", "#ff00f3", "#ff00ed",
+    "#ff00e7", "#ff00e1", "#ff00db", "#ff00d5", "#ff00cf", "#ff00c9", "#ff00c3", "#ff00bd",
+    "#ff00b7", "#ff00b1", "#ff00ab", "#ff00a5", "#ff009f", "#ff0099", "#ff0093", "#ff008d",
+    "#ff0087", "#ff0081", "#ff007b", "#ff0075", "#ff006f", "#ff0069", "#ff0063", "#ff005d",
+    "#ff0057", "#ff0051", "#ff004b", "#ff0045", "#ff003f", "#ff0039", "#ff0033", "#ff002d",
+    "#ff0027", "#ff0021", "#ff001b", "#ff0015", "#ff000f", "#ff0009", "#ffffff", "#000000"
 };
-
-static const QList<QColor> m_rgbLEDColorsLastLine = {
-    {186, 0, 5}, {189, 0, 7}, {192, 0, 9}, {195, 0, 10}, {197, 0, 10}, {200, 0, 11}, {255, 255, 255}, {0, 0, 0}
-};
-
-QList<QColor> LEDColors::m_matrixLedcolors = QList<QColor>();
 
 
 LEDColors::LEDColors(QObject *parent) : QAbstractItemModel(parent)
 {
-    //fillup matrix led colors
-    for (const auto& colorPair :  m_rgbLEDColors) {
-        for (int i = 0; i < 8; i++) {
-            const auto color = colorInterpolate(colorPair.first, colorPair.second, 8, i);
-            m_matrixLedcolors.append(color);
-        }
-    }
-    m_matrixLedcolors.append(m_rgbLEDColorsLastLine);
-
     for (int i = 0; i < sFramesNumber; i++) {
         m_colors[i].fill(sBlack, 64);
     }

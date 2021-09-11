@@ -19,16 +19,6 @@ Window {
         lastColorsModel.addColor(colorModel.currentColorIndex)
     }
 
-    MatrixColorPicker {
-        id: colorDialog
-        selectedColorIndex: colorModel.currentColorIndex
-        onAccepted: {
-            colorModel.currentColorIndex = colorDialog.selectedColorIndex
-            lastColorsModel.addColor(colorDialog.selectedColorIndex)
-            console.log("You chose: " + colorDialog.selectedColorIndex)
-        }
-    }
-
     Platform.MessageDialog {
         id: confirmDialog
         text: "Are you sure?"
@@ -47,86 +37,159 @@ Window {
         }
     }
 
-    RowLayout {
+    ColumnLayout {
         id: mainLayout
         anchors.fill: parent
         anchors.margins: 10
+        RowLayout {
 
-        ColumnLayout {
-            Layout.alignment: Qt.AlignTop
-            Grid {
-                id: previewgrid
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            ColumnLayout {
                 Layout.alignment: Qt.AlignTop
-                width: cellSizePreview*8
-                height: cellSizePreview*8
-                rows: 8
-                columns: 8
-                Repeater {
+                Grid {
+                    id: previewgrid
+                    Layout.alignment: Qt.AlignTop
+                    width: cellSizePreview*8
+                    height: cellSizePreview*8
+                    rows: 8
+                    columns: 8
+                    Repeater {
+                        model: colorModel
+                        delegate: Item {
+                            width: cellSizePreview
+                            height: cellSizePreview
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: 0
+                                color: display
+                            }
+                        }
+                    }
+                }
+                Button {
+                    text: "Generate code"
+                    Layout.minimumWidth: previewgrid.width
+                    onClicked: codeDialog.open()
+                }
+
+                Button {
+                    text: "Clear"
+                    Layout.minimumWidth: previewgrid.width
+                    onClicked: confirmDialog.open()
+                }
+            }
+
+            ColumnLayout {
+                id: centerColumn
+                Layout.alignment: Qt.AlignCenter
+                TabBar {
+                    onCurrentIndexChanged: {
+                        colorModel.frameIndex = currentIndex
+                    }
+                    Repeater {
+                        model: 5
+                        TabButton {
+                            text: "Frame " + (index+1)
+                        }
+                    }
+                }
+
+                GridView {
+                    id: grid
+                    width: cellSize*8
+                    height: cellSize*8
+                    cellWidth: cellSize
+                    cellHeight: cellSize
                     model: colorModel
                     delegate: Item {
-                        width: cellSizePreview
-                        height: cellSizePreview
+                        width: cellSize
+                        height: cellSize
                         Rectangle {
                             anchors.fill: parent
-                            anchors.margins: 0
+                            anchors.margins: 1
                             color: display
+                            radius: 3
+                            border.color: "black"
+                            border.width: 1
+                            MouseArea {
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: {
+                                    if (mouse.button === Qt.RightButton)
+                                        colorModel.setDefaultColor(index)
+                                    else
+                                        colorModel.setColor(index)
+                                }
+                            }
                         }
                     }
                 }
             }
-            Button {
-                text: "Generate code"
-                Layout.minimumWidth: previewgrid.width
-                onClicked: codeDialog.open()
-            }
 
-            Button {
-                text: "Clear"
-                Layout.minimumWidth: previewgrid.width
-                onClicked: confirmDialog.open()
-            }
-        }
+            ColumnLayout {
+                Layout.fillHeight: true
+                width: (cellSize + 6)*3
+                Layout.alignment: Qt.AlignTop
+                anchors.margins: 10
+                spacing: 5
 
-        ColumnLayout {
-            id: centerColumn
-            Layout.alignment: Qt.AlignCenter
-            TabBar {
-                onCurrentIndexChanged: {
-                    colorModel.frameIndex = currentIndex
+                Text {
+                    text: "Current color:"
                 }
-                Repeater {
-                    model: 5
-                    TabButton {
-                        text: "Frame " + (index+1)
+
+                Rectangle {
+                    id: currentColorRect
+                    width: parent.width
+                    height: cellSize
+                    radius: 3
+                    color: colorModel.currentColor
+                    border.color: "black"
+                    border.width: 1
+                    layer.enabled: true
+                    layer.effect: DropShadow {
+                        transparentBorder: true
+                        color: "#000000"
+                        spread: 0.5
+                        radius: 3
+                        horizontalOffset: 4
+                        verticalOffset: 4
                     }
                 }
-            }
 
-            GridView {
-                id: grid
-                width: cellSize*8
-                height: cellSize*8
-                cellWidth: cellSize
-                cellHeight: cellSize
-                model: colorModel
-                delegate: Item {
-                    width: cellSize
-                    height: cellSize
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 1
-                        color: display
-                        radius: 3
-                        border.color: "black"
-                        border.width: 1
-                        MouseArea {
-                            anchors.fill: parent
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            onClicked: {
-                                if (mouse.button === Qt.RightButton)
-                                    colorModel.setDefaultColor(index)
-                                else
-                                    colorModel.setColor(index)
+                Text {
+                    text: "Last selected colors:"
+                }
+
+                GridView {
+                    width: parent.width
+                    height: parent.width
+                    model: lastColorsModel
+                    cellWidth: cellSize + 6
+                    cellHeight: cellSize + 6
+                    delegate: Item {
+                        width: cellSize + 6
+                        height: cellSize + 6
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: cellSize
+                            height: cellSize
+                            color: display
+                            radius: 3
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    colorModel.currentColorIndex = lastColorsModel.getColorIndex(index)
+                                }
+                            }
+                            layer.enabled: true
+                            layer.effect: DropShadow {
+                                transparentBorder: true
+                                color: "#000000"
+                                spread: 0.5
+                                radius: 3
+                                horizontalOffset: 2
+                                verticalOffset: 2
                             }
                         }
                     }
@@ -134,74 +197,25 @@ Window {
             }
         }
 
-        ColumnLayout {
-            Layout.fillHeight: true
-            width: (cellSize + 6)*3
-            Layout.alignment: Qt.AlignTop
-            anchors.margins: 10
-            spacing: 5
-
-            Text {
-                text: "Current color:"
-            }
-
-            Rectangle {
-                id: currentColorRect
-                width: parent.width
-                height: cellSize
-                radius: 3
-                color: colorModel.currentColor
+        GridView {
+            Layout.fillWidth: true
+            height: cellSize
+            flow: GridView.FlowTopToBottom
+            model: 256
+            clip: true
+            cellWidth: cellSize/2
+            cellHeight: cellSize/2
+            delegate: Rectangle {
+                width: cellSize/2
+                height: cellSize/2
+                color: colorModel.matrixColor(index)
                 border.color: "black"
                 border.width: 1
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: colorDialog.open()
-                }
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    transparentBorder: true
-                    color: "#000000"
-                    spread: 0.5
-                    radius: 3
-                    horizontalOffset: 4
-                    verticalOffset: 4
-                }
-            }
-
-            Text {
-                text: "Last selected colors:"
-            }
-
-            GridView {
-                width: parent.width
-                height: parent.width
-                model: lastColorsModel
-                cellWidth: cellSize + 6
-                cellHeight: cellSize + 6
-                delegate: Item {
-                    width: cellSize + 6
-                    height: cellSize + 6
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: cellSize
-                        height: cellSize
-                        color: display
-                        radius: 3
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                colorModel.currentColorIndex = lastColorsModel.getColorIndex(index)
-                            }
-                        }
-                        layer.enabled: true
-                        layer.effect: DropShadow {
-                            transparentBorder: true
-                            color: "#000000"
-                            spread: 0.5
-                            radius: 3
-                            horizontalOffset: 2
-                            verticalOffset: 2
-                        }
+                    onClicked: {
+                        colorModel.currentColorIndex = index
+                        lastColorsModel.addColor(index)
                     }
                 }
             }
